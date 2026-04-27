@@ -1,0 +1,54 @@
+{
+  "nodes": [
+    {
+      "id": "START",
+      "type": "start",
+      "text": "Good evening. Let’s reflect on your day.",
+      "next": "Q1"
+    },
+    {
+      "id": "Q1",
+      "type": "question",
+      "text": "How was your day?",
+      "options": [
+        {"text": "Productive", "next": "Q2"},
+        {"text": "Tough", "next": "Q3"}
+      ]
+    },
+    {
+      "id": "Q2",
+      "type": "question",
+      "text": "What helped your day go well?",
+      "options": [
+        {"text": "My effort", "next": "REFLECT1"},
+        {"text": "Luck", "next": "REFLECT2"}
+      ]
+    },
+    {
+      "id": "Q3",
+      "type": "question",
+      "text": "What made your day difficult?",
+      "options": [
+        {"text": "Situation", "next": "REFLECT2"},
+        {"text": "My decisions", "next": "REFLECT1"}
+      ]
+    },
+    {
+      "id": "REFLECT1",
+      "type": "reflection",
+      "text": "You had more control over your day than you might think.",
+      "next": "END"
+    },
+    {
+      "id": "REFLECT2",
+      "type": "reflection",
+      "text": "Sometimes things feel outside control, but small choices still matter.",
+      "next": "END"
+    },
+    {
+      "id": "END",
+      "type": "end",
+      "text": "Good job reflecting. See you tomorrow."
+    }
+  ]
+}
