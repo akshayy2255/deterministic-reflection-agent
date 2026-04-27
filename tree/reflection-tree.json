@@ -1,54 +1,227 @@
 {
   "nodes": [
+
     {
       "id": "START",
       "type": "start",
-      "text": "Good evening. Let’s reflect on your day.",
-      "next": "Q1"
+      "text": "Good evening. Let’s take a few minutes to look back at your day.",
+      "next": "A1_Q1"
     },
+
     {
-      "id": "Q1",
+      "id": "A1_Q1",
       "type": "question",
-      "text": "How was your day?",
+      "text": "If you had to describe today in one word, what would it be?",
       "options": [
-        {"text": "Productive", "next": "Q2"},
-        {"text": "Tough", "next": "Q3"}
+        {"text": "Productive", "next": "A1_Q2_HIGH"},
+        {"text": "Mixed", "next": "A1_Q2_HIGH"},
+        {"text": "Tough", "next": "A1_Q2_LOW"},
+        {"text": "Frustrating", "next": "A1_Q2_LOW"}
       ]
     },
+
     {
-      "id": "Q2",
+      "id": "A1_Q2_HIGH",
       "type": "question",
-      "text": "What helped your day go well?",
+      "text": "You said '{A1_Q1.answer}'. When things went well, what made that happen?",
       "options": [
-        {"text": "My effort", "next": "REFLECT1"},
-        {"text": "Luck", "next": "REFLECT2"}
+        {"text": "I was prepared and focused", "signal": "axis1:internal", "next": "A1_Q3"},
+        {"text": "The team supported well", "signal": "axis1:internal", "next": "A1_Q3"},
+        {"text": "Things just fell into place", "signal": "axis1:external", "next": "A1_Q3"}
       ]
     },
+
     {
-      "id": "Q3",
+      "id": "A1_Q2_LOW",
       "type": "question",
-      "text": "What made your day difficult?",
+      "text": "You said '{A1_Q1.answer}'. When things didn’t go as planned, what was your first reaction?",
       "options": [
-        {"text": "Situation", "next": "REFLECT2"},
-        {"text": "My decisions", "next": "REFLECT1"}
+        {"text": "Tried to figure out what I could still control", "signal": "axis1:internal", "next": "A1_Q3"},
+        {"text": "Felt the situation was unfair or out of my hands", "signal": "axis1:external", "next": "A1_Q3"},
+        {"text": "Waited to see if someone else would step in", "signal": "axis1:external", "next": "A1_Q3"}
       ]
     },
+
     {
-      "id": "REFLECT1",
+      "id": "A1_Q3",
+      "type": "question",
+      "text": "In those moments, how did you actually respond?",
+      "options": [
+        {"text": "Adjusted and found another way forward", "signal": "axis1:internal", "next": "A1_DECISION"},
+        {"text": "Pushed through but felt stuck", "signal": "axis1:external", "next": "A1_DECISION"},
+        {"text": "Let it play out without much intervention", "signal": "axis1:external", "next": "A1_DECISION"}
+      ]
+    },
+
+    {
+      "id": "A1_DECISION",
+      "type": "decision",
+      "logic": [
+        {"condition": "axis1.internal >= axis1.external", "next": "A1_REFLECT_INT"},
+        {"condition": "axis1.external > axis1.internal", "next": "A1_REFLECT_EXT"}
+      ]
+    },
+
+    {
+      "id": "A1_REFLECT_INT",
       "type": "reflection",
-      "text": "You had more control over your day than you might think.",
+      "text": "You described your day as '{A1_Q1.answer}', but you also took action in key moments. That suggests you had more control than it may have felt.",
+      "next": "BRIDGE_1_2"
+    },
+
+    {
+      "id": "A1_REFLECT_EXT",
+      "type": "reflection",
+      "text": "A lot of today felt outside your control. That’s real. But even then, you made small choices — and noticing those is where control begins.",
+      "next": "BRIDGE_1_2"
+    },
+
+    {
+      "id": "BRIDGE_1_2",
+      "type": "bridge",
+      "text": "Now let’s shift from how you handled situations to what you brought into them.",
+      "next": "A2_Q1"
+    },
+
+    {
+      "id": "A2_Q1",
+      "type": "question",
+      "text": "Think about one interaction today. Were you mostly giving or expecting?",
+      "options": [
+        {"text": "I helped even when it wasn’t required", "signal": "axis2:contribution", "next": "A2_Q2"},
+        {"text": "I did what was expected", "signal": "axis2:neutral", "next": "A2_Q2"},
+        {"text": "I felt I deserved more support", "signal": "axis2:entitlement", "next": "A2_Q2"}
+      ]
+    },
+
+    {
+      "id": "A2_Q2",
+      "type": "question",
+      "text": "When extra effort was needed, what did you do?",
+      "options": [
+        {"text": "Took initiative", "signal": "axis2:contribution", "next": "A2_Q3"},
+        {"text": "Avoided it", "signal": "axis2:entitlement", "next": "A2_Q3"},
+        {"text": "Stayed within my role", "signal": "axis2:neutral", "next": "A2_Q3"}
+      ]
+    },
+
+    {
+      "id": "A2_Q3",
+      "type": "question",
+      "text": "When your effort wasn’t noticed, what did you think?",
+      "options": [
+        {"text": "The work matters more", "signal": "axis2:contribution", "next": "A2_DECISION"},
+        {"text": "I deserved more credit", "signal": "axis2:entitlement", "next": "A2_DECISION"},
+        {"text": "I didn’t think much about it", "signal": "axis2:neutral", "next": "A2_DECISION"}
+      ]
+    },
+
+    {
+      "id": "A2_DECISION",
+      "type": "decision",
+      "logic": [
+        {"condition": "axis2.contribution >= axis2.entitlement", "next": "A2_REFLECT_CONTR"},
+        {"condition": "axis2.entitlement > axis2.contribution", "next": "A2_REFLECT_ENT"}
+      ]
+    },
+
+    {
+      "id": "A2_REFLECT_CONTR",
+      "type": "reflection",
+      "text": "You leaned towards contributing without expecting immediate recognition. That builds long-term value.",
+      "next": "BRIDGE_2_3"
+    },
+
+    {
+      "id": "A2_REFLECT_ENT",
+      "type": "reflection",
+      "text": "Recognition mattered to you today. That’s natural — but focusing only on what you receive can hide what you still have the power to give.",
+      "next": "BRIDGE_2_3"
+    },
+
+    {
+      "id": "BRIDGE_2_3",
+      "type": "bridge",
+      "text": "Now let’s expand the view beyond just yourself.",
+      "next": "A3_Q1"
+    },
+
+    {
+      "id": "A3_Q1",
+      "type": "question",
+      "text": "When you think about today’s biggest challenge, who comes to mind?",
+      "options": [
+        {"text": "Just me", "signal": "axis3:self", "next": "A3_Q2"},
+        {"text": "My team", "signal": "axis3:team", "next": "A3_Q2"},
+        {"text": "Someone else", "signal": "axis3:others", "next": "A3_Q2"}
+      ]
+    },
+
+    {
+      "id": "A3_Q2",
+      "type": "question",
+      "text": "What were you mainly focused on?",
+      "options": [
+        {"text": "My tasks", "signal": "axis3:self", "next": "A3_Q3"},
+        {"text": "Team goals", "signal": "axis3:team", "next": "A3_Q3"},
+        {"text": "Impact on others", "signal": "axis3:others", "next": "A3_Q3"}
+      ]
+    },
+
+    {
+      "id": "A3_Q3",
+      "type": "question",
+      "text": "What felt most meaningful today?",
+      "options": [
+        {"text": "My progress", "signal": "axis3:self", "next": "A3_DECISION"},
+        {"text": "Team success", "signal": "axis3:team", "next": "A3_DECISION"},
+        {"text": "Helping others", "signal": "axis3:others", "next": "A3_DECISION"}
+      ]
+    },
+
+    {
+      "id": "A3_DECISION",
+      "type": "decision",
+      "logic": [
+        {"condition": "axis3.self >= axis3.team && axis3.self >= axis3.others", "next": "A3_REFLECT_SELF"},
+        {"condition": "axis3.team >= axis3.self && axis3.team >= axis3.others", "next": "A3_REFLECT_TEAM"},
+        {"condition": "axis3.others > axis3.self && axis3.others > axis3.team", "next": "A3_REFLECT_OTHERS"}
+      ]
+    },
+
+    {
+      "id": "A3_REFLECT_SELF",
+      "type": "reflection",
+      "text": "Your focus stayed mostly on yourself today. That’s important — but expanding that view can reduce stress and add meaning.",
+      "next": "SUMMARY"
+    },
+
+    {
+      "id": "A3_REFLECT_TEAM",
+      "type": "reflection",
+      "text": "You focused on the team. That shared perspective often makes challenges feel lighter and progress more meaningful.",
+      "next": "SUMMARY"
+    },
+
+    {
+      "id": "A3_REFLECT_OTHERS",
+      "type": "reflection",
+      "text": "You showed awareness beyond yourself. That outward focus often leads to the strongest sense of purpose.",
+      "next": "SUMMARY"
+    },
+
+    {
+      "id": "SUMMARY",
+      "type": "summary",
+      "text": "You described your day as '{A1_Q1.answer}'. Across the day, you leaned towards {axis1_result}, showed {axis2_result}, and focused on {axis3_result}. Noticing these patterns is the first step toward changing them.",
       "next": "END"
     },
-    {
-      "id": "REFLECT2",
-      "type": "reflection",
-      "text": "Sometimes things feel outside control, but small choices still matter.",
-      "next": "END"
-    },
+
     {
       "id": "END",
       "type": "end",
-      "text": "Good job reflecting. See you tomorrow."
+      "text": "That’s it for today. See you tomorrow."
     }
+
   ]
 }
